@@ -115,7 +115,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
 
     if (hasNegativeOrZeroDataPoint && affectingConfiguration) {
       const spacing = barValuesLabelConfig.spacing ?? 0;
-      return defaultOffset + (valueLabelFontSize + spacing) / 2;
+      return defaultOffset + valueLabelFontSize + spacing;
     }
     return defaultOffset;
   };
@@ -337,12 +337,14 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
         }
     };
 
+    const heightWithOffset = height + this.getXLabelsOffset();
     return (
       <View style={style}>
-        <Svg height={height} width={width}>
+        <Svg height={heightWithOffset} width={width}>
           {this.renderDefs({
             ...config,
-            ...this.props.chartConfig
+            ...this.props.chartConfig,
+            height: heightWithOffset
           })}
           {this.renderColors({
             ...this.props.chartConfig,
@@ -351,7 +353,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           })}
           <Rect
             width="100%"
-            height={height}
+            height={heightWithOffset}
             rx={borderRadius}
             ry={borderRadius}
             fill="url(#backgroundGradient)"
