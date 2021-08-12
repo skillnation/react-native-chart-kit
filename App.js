@@ -19,7 +19,7 @@ import {
   PieChart,
   ProgressChart,
   StackedBarChart
-} from "./dist/";
+} from "./src/";
 
 // in Expo - swipe left to see the following styling, or create your own
 const chartConfigs = [
@@ -169,6 +169,10 @@ export default class App extends React.Component {
                 yAxisLabel="$"
                 chartConfig={chartConfig}
                 style={graphStyle}
+                showValuesBars={{
+                  negativePos: "bottom",
+                  spacing: 2
+                }}
               />
               <Text style={labelStyle}>Stacked Bar Graph</Text>
               <StackedBarChart

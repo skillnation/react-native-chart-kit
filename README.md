@@ -11,6 +11,7 @@ To try the examples in Expo, please change `main` to `./node_modules/expo/AppEnt
 ## Changes made in this fork:
 
 - Upgraded example to expo SDK 42
+- Added `showValuesBars` prop to `BarChart` (replaced `showValuesOnTopOfBars`). See [BarChart props](#bar-chart)
 
 ## Import components
 
@@ -264,22 +265,21 @@ const data = {
 />
 ```
 
-| Property                | Type            | Description                                                                                 |
-| ----------------------- | --------------- | ------------------------------------------------------------------------------------------- |
-| data                    | Object          | Data for the chart - see example above                                                      |
-| width                   | Number          | Width of the chart, use 'Dimensions' library to get the width of your screen for responsive |
-| height                  | Number          | Height of the chart                                                                         |
-| withVerticalLabels      | boolean         | Show vertical labels - default: True                                                        |
-| withHorizontalLabels    | boolean         | Show horizontal labels - default: True                                                      |
-| fromZero                | boolean         | Render charts from 0 not from the minimum value. - default: False                           |
-| withInnerLines          | boolean         | Show inner dashed lines - default: True                                                     |
-| yAxisLabel              | string          | Prepend text to horizontal labels -- default: ''                                            |
-| yAxisSuffix             | string          | Append text to horizontal labels -- default: ''                                             |
-| chartConfig             | Object          | Configuration object for the chart, see example config in the beginning of this file        |
-| horizontalLabelRotation | number (degree) | Rotation angle of the horizontal labels - default 0                                         |
-| verticalLabelRotation   | number (degree) | Rotation angle of the vertical labels - default 0                                           |
-| showBarTops             | boolean         | Show bar tops                                                                               |
-| showValuesOnTopOfBars   | boolean         | Show value above bars                                                                       |
+| Property                | Type              | Description                                                                                          |
+| ----------------------- | ----------------- | ---------------------------------------------------------------------------------------------------- |
+| data                    | Object            | Data for the chart - see example above                                                               |
+| width                   | Number            | Width of the chart, use 'Dimensions' library to get the width of your screen for responsive          |
+| height                  | Number            | Height of the chart                                                                                  |
+| withVerticalLabels      | boolean           | Show vertical labels - default: True                                                                 |
+| withHorizontalLabels    | boolean           | Show horizontal labels - default: True                                                               |
+| fromZero                | boolean           | Render charts from 0 not from the minimum value. - default: False                                    |
+| withInnerLines          | boolean           | Show inner dashed lines - default: True                                                              |
+| yAxisLabel              | string            | Prepend text to horizontal labels -- default: ''                                                     |
+| yAxisSuffix             | string            | Append text to horizontal labels -- default: ''                                                      |
+| chartConfig             | Object            | Configuration object for the chart, see example config in the beginning of this file                 |
+| horizontalLabelRotation | number (degree)   | Rotation angle of the horizontal labels - default 0                                                  |
+| verticalLabelRotation   | number (degree)   | Rotation angle of the vertical labels - default 0                                                    |
+| showBarTops             | boolean \| object | Show value on bars. Can be either a boolean, or a fine configuration of where to display the values. |
 
 ## StackedBar chart
 

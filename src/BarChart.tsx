@@ -17,6 +17,32 @@ import AbstractChart, {
 import { ChartData } from "./HelperTypes";
 
 const barWidth = 32;
+const barTopsHeight = 2;
+const valueLabelFontSize = 12;
+
+export type ValuePositions = "top" | "bottom";
+export type ValueBarConfiguration = {
+  /**
+   * The amount of space between the bar's line and the label.
+   * @default 0
+   */
+  spacing?: number;
+  /**
+   * The position of negative values in relation to the top mark line.
+   * @default top
+   */
+  negativePos?: ValuePositions;
+  /**
+   * The position of negative values in relation to the top mark line.
+   * @default top
+   */
+  positivePos?: ValuePositions;
+  /**
+   * The position of 0 value in relation to the top mark line.
+   * @default top
+   */
+  zeroPos?: ValuePositions;
+};
 
 export interface BarChartProps extends AbstractChartProps {
   data: ChartData;
@@ -43,7 +69,15 @@ export interface BarChartProps extends AbstractChartProps {
    */
   segments?: number;
   showBarTops?: boolean;
-  showValuesOnTopOfBars?: boolean;
+  /**
+   * Whether or not to show values at the bars.
+   * You can supply a configuration instead of a boolean to
+   * configure where to show negative and positive values.
+   * Default is top.
+   *
+   * @default false
+   */
+  showValuesBars?: boolean | ValueBarConfiguration;
   withCustomBarColorFromData?: boolean;
   flatColor?: boolean;
 }
@@ -54,6 +88,36 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
   getBarPercentage = () => {
     const { barPercentage = 1 } = this.props.chartConfig;
     return barPercentage;
+  };
+
+  /**
+   * When showing the values of bars and they are configured to be
+   * displayed below the bar (bottom) then it can happen that the value
+   * collides with the labels. If this is the case this functions returns
+   * an offset.
+   *
+   * @returns {number}
+   */
+  getXLabelsOffset = (): number => {
+    const defaultOffset = this.props.xLabelsOffset ?? 0;
+    const barValuesLabelConfig = this.props.showValuesBars;
+    if (typeof barValuesLabelConfig !== "object") {
+      return defaultOffset;
+    }
+
+    const hasNegativeOrZeroDataPoint = this.props.data.datasets.some(
+      ({ data }) => data.some(value => value <= 0)
+    );
+    // positive values will always be rendered above a bar, so its not necessary to apply an offset then.
+    const affectingConfiguration =
+      barValuesLabelConfig.zeroPos === "bottom" ||
+      barValuesLabelConfig.negativePos === "bottom";
+
+    if (hasNegativeOrZeroDataPoint && affectingConfiguration) {
+      const spacing = barValuesLabelConfig.spacing ?? 0;
+      return defaultOffset + (valueLabelFontSize + spacing) / 2;
+    }
+    return defaultOffset;
   };
 
   renderBars = ({
@@ -128,7 +192,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           }
           y={((baseHeight - barHeight) / 4) * 3 + paddingTop}
           width={barWidth}
-          height={2}
+          height={barTopsHeight}
           fill={this.props.chartConfig.color(0.6)}
         />
       );
@@ -160,8 +224,8 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
               {flatColor ? (
                 <Stop offset="1" stopColor={highOpacityColor} stopOpacity="1" />
               ) : (
-                  <Stop offset="1" stopColor={lowOpacityColor} stopOpacity="0" />
-                )}
+                <Stop offset="1" stopColor={lowOpacityColor} stopOpacity="0" />
+              )}
             </LinearGradient>
           );
         })}
@@ -169,21 +233,48 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
     ));
   };
 
-  renderValuesOnTopOfBars = ({
+  renderValuesOnBars = ({
     data,
     width,
     height,
     paddingTop,
-    paddingRight
+    paddingRight,
+    valueBarConfiguration = {
+      negativePos: "top",
+      positivePos: "top",
+      zeroPos: "top",
+      spacing: 0
+    }
   }: Pick<
     Omit<AbstractChartConfig, "data">,
     "width" | "height" | "paddingRight" | "paddingTop"
   > & {
     data: number[];
+    valueBarConfiguration?: ValueBarConfiguration;
   }) => {
     const baseHeight = this.calcBaseHeight(data, height);
+    const {
+      negativePos,
+      positivePos,
+      zeroPos,
+      spacing = 0
+    } = valueBarConfiguration;
+    const bottomYOffset = spacing + valueLabelFontSize + barTopsHeight / 2;
 
     return data.map((x, i) => {
+      const value = data[i];
+
+      let yOffset = -spacing;
+      if (negativePos === "bottom" && value < 0) {
+        yOffset = bottomYOffset;
+      }
+      if (positivePos === "bottom" && value > 0) {
+        yOffset = bottomYOffset;
+      }
+      if (zeroPos === "bottom" && value === 0) {
+        yOffset = bottomYOffset;
+      }
+
       const barHeight = this.calcHeight(x, data, height);
       const barWidth = 32 * this.getBarPercentage();
       return (
@@ -194,12 +285,12 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
             (i * (width - paddingRight)) / data.length +
             barWidth / 1
           }
-          y={((baseHeight - barHeight) / 4) * 3 + paddingTop - 1}
+          y={yOffset + ((baseHeight - barHeight) / 4) * 3 + paddingTop - 1}
           fill={this.props.chartConfig.color(0.6)}
-          fontSize="12"
+          fontSize={valueLabelFontSize}
           textAnchor="middle"
         >
-          {data[i]}
+          {value}
         </Text>
       );
     });
@@ -218,7 +309,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
       withInnerLines = true,
       showBarTops = true,
       withCustomBarColorFromData = false,
-      showValuesOnTopOfBars = false,
+      showValuesBars = false,
       flatColor = false,
       segments = 4
     } = this.props;
@@ -236,12 +327,12 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
         (this.props.chartConfig && this.props.chartConfig.decimalPlaces) ?? 2,
       formatYLabel:
         (this.props.chartConfig && this.props.chartConfig.formatYLabel) ||
-        function (label) {
+        function(label) {
           return label;
         },
       formatXLabel:
         (this.props.chartConfig && this.props.chartConfig.formatXLabel) ||
-        function (label) {
+        function(label) {
           return label;
         }
     };
@@ -268,32 +359,32 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           <G>
             {withInnerLines
               ? this.renderHorizontalLines({
-                ...config,
-                count: segments,
-                paddingTop
-              })
+                  ...config,
+                  count: segments,
+                  paddingTop
+                })
               : null}
           </G>
           <G>
             {withHorizontalLabels
               ? this.renderHorizontalLabels({
-                ...config,
-                count: segments,
-                data: data.datasets[0].data,
-                paddingTop: paddingTop as number,
-                paddingRight: paddingRight as number
-              })
+                  ...config,
+                  count: segments,
+                  data: data.datasets[0].data,
+                  paddingTop: paddingTop as number,
+                  paddingRight: paddingRight as number
+                })
               : null}
           </G>
           <G>
             {withVerticalLabels
               ? this.renderVerticalLabels({
-                ...config,
-                labels: data.labels,
-                paddingRight: paddingRight as number,
-                paddingTop: paddingTop as number,
-                horizontalOffset: barWidth * this.getBarPercentage()
-              })
+                  ...config,
+                  labels: data.labels,
+                  paddingRight: paddingRight as number,
+                  paddingTop: paddingTop as number,
+                  horizontalOffset: barWidth * this.getBarPercentage()
+                })
               : null}
           </G>
           <G>
@@ -306,12 +397,17 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
             })}
           </G>
           <G>
-            {showValuesOnTopOfBars &&
-              this.renderValuesOnTopOfBars({
+            {!!showValuesBars &&
+              this.renderValuesOnBars({
                 ...config,
                 data: data.datasets[0].data,
                 paddingTop: paddingTop as number,
-                paddingRight: paddingRight as number
+                paddingRight: paddingRight as number,
+                // only add the configuration when its an object
+                valueBarConfiguration:
+                  typeof showValuesBars === "object"
+                    ? showValuesBars
+                    : undefined
               })}
           </G>
           <G>

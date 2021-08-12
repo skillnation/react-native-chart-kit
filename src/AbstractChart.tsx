@@ -237,6 +237,10 @@ class AbstractChart<
     });
   };
 
+  getXLabelsOffset = (): number => {
+    return this.props.xLabelsOffset ?? 0;
+  };
+
   renderVerticalLabels = ({
     labels = [],
     width,
@@ -261,11 +265,9 @@ class AbstractChart<
     | "formatXLabel"
     | "verticalLabelsHeightPercentage"
   >) => {
-    const {
-      xAxisLabel = "",
-      xLabelsOffset = 0,
-      hidePointsAtIndex = []
-    } = this.props;
+    const xLabelsOffset = this.getXLabelsOffset();
+
+    const { xAxisLabel = "", hidePointsAtIndex = [] } = this.props;
 
     const fontSize = 12;
 
