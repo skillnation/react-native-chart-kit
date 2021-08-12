@@ -1,5 +1,5 @@
 {
-  "name": "react-native-chart-kit",
+  "name": "@skillnation/react-native-chart-kit",
   "version": "6.11.0",
   "devDependencies": {
     "@types/react": "~16.9.35",
@@ -62,9 +62,9 @@
     }
   },
   "license": "MIT",
-  "homepage": "https://github.com/indiespirit/react-native-chart-kit",
+  "homepage": "https://github.com/skillnation/react-native-chart-kit",
   "repository": {
     "type": "git",
-    "url": "https://github.com/indiespirit/react-native-chart-kit"
+    "url": "https://github.com/skillnation/react-native-chart-kit"
   }
 }
