@@ -8,6 +8,10 @@ To try the examples in Expo, please change `main` to `./node_modules/expo/AppEnt
 
 # React Native Chart Kit Documentation
 
+## Changes made in this fork:
+
+- Upgraded example to expo SDK 42
+
 ## Import components
 
 1. `yarn add react-native-chart-kit`
