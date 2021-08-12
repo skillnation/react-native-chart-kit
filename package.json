@@ -1,6 +1,6 @@
 {
   "name": "@skillnation/react-native-chart-kit",
-  "version": "7.0.1",
+  "version": "7.0.0",
   "devDependencies": {
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
