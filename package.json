@@ -42,8 +42,10 @@
     "test": "jest",
     "build": "rm -rf dist/ && tsc --skipLibCheck",
     "dev": "tsc --watch",
-    "prepublish": "yarn build",
-    "postpublish": "npx conventional-github-releaser -p angular"
+    "preversion": "yarn build",
+    "postversion": "npx conventional-github-releaser -p angular",
+    "prepublish": "yarn preversion",
+    "postpublish": "yarn postversion"
   },
   "jest": {
     "preset": "jest-expo"
