@@ -26,7 +26,7 @@ import { LegendItem } from "./LegendItem";
 
 let AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-export interface LineChartData extends ChartData {
+export interface LineChartData<T = unknown> extends ChartData<T> {
   legend?: string[];
 }
 
