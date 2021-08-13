@@ -43,7 +43,7 @@
     "build": "rm -rf dist/ && tsc --skipLibCheck",
     "dev": "tsc --watch",
     "preversion": "yarn build",
-    "postversion": "npx conventional-github-releaser -p angular && yarn publish",
+    "postversion": "git push && npx conventional-github-releaser -p angular && yarn publish",
     "prepublish": "yarn preversion"
   },
   "jest": {

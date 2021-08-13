@@ -30,7 +30,7 @@ export interface Dataset {
   strokeDashOffset?: number;
 }
 
-export interface ChartData<T> {
+export interface ChartData<T = unknown> {
   /** The x-axis labels */
   labels: string[];
   datasets: Dataset[];
