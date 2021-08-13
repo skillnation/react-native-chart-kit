@@ -12,6 +12,8 @@ To try the examples in Expo, please change `main` to `./node_modules/expo/AppEnt
 
 - Upgraded example to expo SDK 42
 - Added `showValuesBars` prop to `BarChart` (replaced `showValuesOnTopOfBars`). See [BarChart props](#bar-chart)
+- Fixed bug where line chart points weren't clickable
+- `ChartData` and `LineChartData` accept now a property called `additionalData` who's type can be specified via a generic parameter
 
 ## Import components
 
