@@ -42,6 +42,19 @@ export type ValueBarConfiguration = {
    * @default top
    */
   zeroPos?: ValuePositions;
+  /**
+   * How to prefix the values rendered on the bars
+   */
+  valuePrefix?: {
+    /**
+     * @default {"-"} negative minus sign
+     */
+    negative?: string;
+    // empty string / no prefix
+    positive?: string;
+    // empty string / no prefix
+    zero?: string;
+  };
 };
 
 export interface BarChartProps extends AbstractChartProps {
@@ -257,6 +270,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
       negativePos,
       positivePos,
       zeroPos,
+      valuePrefix = {},
       spacing = 0
     } = valueBarConfiguration;
     const bottomYOffset = spacing + valueLabelFontSize + barTopsHeight / 2;
@@ -275,6 +289,15 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
         yOffset = bottomYOffset;
       }
 
+      let label = "";
+      if (value < 0) {
+        label = `${valuePrefix.negative ?? "-"}${value * -1}`;
+      } else if (value > 0) {
+        label = `${valuePrefix.positive ?? ""}${value}`;
+      } else {
+        label = `${valuePrefix.zero ?? ""}${value}`;
+      }
+
       const barHeight = this.calcHeight(x, data, height);
       const barWidth = 32 * this.getBarPercentage();
       return (
@@ -290,7 +313,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           fontSize={valueLabelFontSize}
           textAnchor="middle"
         >
-          {value}
+          {label}
         </Text>
       );
     });
