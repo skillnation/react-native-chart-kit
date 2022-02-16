@@ -171,7 +171,7 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
           fill={
             withCustomBarColorFromData
               ? `url(#customColor_0_${i})`
-              : "url(#fillShadowGradient)"
+              : "url(#fillShadowGradientFrom)"
           }
         />
       );
@@ -275,6 +275,13 @@ class BarChart extends AbstractChart<BarChartProps, BarChartState> {
     } = valueBarConfiguration;
     const bottomYOffset = spacing + valueLabelFontSize + barTopsHeight / 2;
 
+    const renderLabel = (value: number) => {
+      if (this.props.chartConfig.formatTopBarValue) {
+        return this.props.chartConfig.formatTopBarValue(value);
+      } else {
+        return value;
+      }
+    };
     return data.map((x, i) => {
       const value = data[i];
 
